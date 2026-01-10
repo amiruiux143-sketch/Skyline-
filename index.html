@@ -1,11 +1,148 @@
 <!DOCTYPE html>
 <html>
-<body style="text-align: center; font-family: Arial; padding-top: 100px;">
-  <img src="Skyline">
-  <br><br>
-  <input type="text" style="width: 400px; padding: 10px; border-radius: 20px; border: 1px solid #ddd;">
-  <br><br>
-  <button style="padding: 10px 20px;">Поиск в Моем skyLinе</button>
-  <p>Брат, это мой личный сервер!</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyline Global</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #000; --accent: #00d2ff; --card: rgba(255,255,255,0.05); }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        
+        .header { padding: 25px; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); border-bottom: 1px solid #111; position: sticky; top:0; z-index:10; }
+        .search-box { background: var(--card); border: 1px solid #222; border-radius: 12px; padding: 10px; display: flex; align-items: center; margin-top: 15px; }
+        .search-box input { background: transparent; border: none; color: white; margin-left: 10px; width: 100%; outline: none; }
+
+        .container { padding: 20px; padding-bottom: 100px; }
+        .page { display: none; }
+        .active { display: block; animation: fadeIn 0.4s; }
+
+        /* Карточка приложения */
+        .app-item { background: var(--card); border: 1px solid #111; border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .app-logo { width: 60px; height: 60px; border-radius: 15px; object-fit: cover; background: #111; }
+        .app-info { flex: 1; }
+        .app-name { font-weight: bold; font-size: 16px; margin-bottom: 3px; }
+        .app-desc { font-size: 11px; color: #777; }
+        .btn-get { background: var(--accent); color: #000; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 12px; }
+
+        /* Форма загрузки */
+        .input-group { margin-bottom: 15px; }
+        label { display: block; color: var(--accent); font-size: 12px; margin-bottom: 5px; }
+        input[type="text"], textarea { width: 100%; background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 10px; color: white; box-sizing: border-box; }
+        .file-input { border: 1px dashed #444; padding: 15px; text-align: center; border-radius: 10px; cursor: pointer; display: block; }
+
+        /* Навигация */
+        .nav { position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #111; backdrop-filter: blur(10px); }
+        .nav i { font-size: 22px; color: #444; transition: 0.3s; }
+        .nav i.active-nav { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
+        @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div style="font-size: 20px; font-weight: 800; letter-spacing: 2px;">SKYLINE <span style="color:var(--accent)">INFINITY</span></div>
+    <div class="search-box">
+        <i class="fa fa-search" style="color: #444;"></i>
+        <input type="text" id="search" placeholder="Поиск приложений..." oninput="filterApps()">
+    </div>
+</div>
+
+<div class="container">
+    <div id="homePage" class="page active">
+        <div id="appList"></div>
+    </div>
+
+    <div id="uploadPage" class="page">
+        <h2 style="color:var(--accent)">Издательский Центр</h2>
+        <form id="appForm">
+            <div class="input-group">
+                <label>Название</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="input-group">
+                <label>Описание</label>
+                <textarea name="desc" rows="3"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Иконка приложения</label>
+                <input type="file" name="appLogo" accept="image/*" class="file-input">
+            </div>
+            <div class="input-group">
+                <label>Файл приложения (APK/ZIP)</label>
+                <input type="file" name="appFile" class="file-input">
+            </div>
+            <button type="button" onclick="uploadApp()" id="upBtn" style="width:100%; padding:15px; background:var(--accent); border:none; border-radius:12px; font-weight:bold; margin-top:10px;">ОПУБЛИКОВАТЬ</button>
+        </form>
+    </div>
+</div>
+
+<div class="nav">
+    <i class="fa fa-home active-nav" onclick="nav('homePage', this)"></i>
+    <i class="fa fa-plus-circle" onclick="nav('uploadPage', this)"></i>
+</div>
+
+<script>
+    // ВСТАВЬ СВОЮ ССЫЛКУ ИЗ REPLIT НИЖЕ
+    const API = "https://534b1b52-a49d-4fb4-aae5-6fd37110b044-00-3ln5wdzu6u8l4.janeway.replit.dev";
+    let allApps = [];
+
+    function nav(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav i').forEach(n => n.classList.remove('active-nav'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active-nav');
+        if(id === 'homePage') loadApps();
+    }
+
+    async function uploadApp() {
+        const btn = document.getElementById('upBtn');
+        btn.innerText = "ЗАГРУЗКА...";
+        btn.disabled = true;
+
+        const formData = new FormData(document.getElementById('appForm'));
+        try {
+            const res = await fetch(API + "/api/upload", { method: "POST", body: formData });
+            if(res.ok) {
+                alert("Приложение успешно добавлено в Skyline!");
+                nav('homePage', document.querySelector('.fa-home'));
+            }
+        } catch(e) { alert("Ошибка сети!"); }
+        
+        btn.innerText = "ОПУБЛИКОВАТЬ";
+        btn.disabled = false;
+    }
+
+    async function loadApps() {
+        try {
+            const res = await fetch(API + "/api/apps");
+            const data = await res.json();
+            allApps = data.apps;
+            render(allApps);
+        } catch(e) { document.getElementById('appList').innerHTML = "Сервер не отвечает..."; }
+    }
+
+    function render(apps) {
+        const list = document.getElementById('appList');
+        list.innerHTML = apps.map(app => `
+            <div class="app-item">
+                <img src="${app.logoUrl}" class="app-logo">
+                <div class="app-info">
+                    <div class="app-name">${app.name}</div>
+                    <div class="app-desc">${app.desc}</div>
+                </div>
+                <button class="btn-get" onclick="window.location.href='${app.fileUrl}'">GET</button>
+            </div>
+        `).reverse().join('');
+    }
+
+    function filterApps() {
+        const q = document.getElementById('search').value.toLowerCase();
+        render(allApps.filter(a => a.name.toLowerCase().includes(q)));
+    }
+
+    loadApps();
+</script>
 </body>
 </html>
