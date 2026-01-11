@@ -9,6 +9,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 
     <style>
+        #loader-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+.skyline-logo {
+    font-size: 40px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #fff, #007aff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.loader-bar {
+    width: 200px;
+    height: 2px;
+    background: #1c1c1e;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.loader-fill {
+    width: 0%;
+    height: 100%;
+    background: #007aff;
+    box-shadow: 0 0 15px #007aff;
+    animation: loading 2s infinite ease-in-out;
+}
+
+@keyframes loading {
+    0% { width: 0%; }
+    50% { width: 100%; }
+    100% { width: 0%; }
+}
+
+#loader-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+        
         :root {
             --sky-accent: #007aff;
             --sky-bg: #000;
@@ -90,6 +139,14 @@
     </style>
 </head>
 <body>
+    <div id="loader-screen">
+    <div class="skyline-logo">SKYLINE</div>
+    <div class="loader-bar">
+        <div class="loader-fill"></div>
+    </div>
+    <p>Инициализация системы...</p>
+    </div>
+    
 
     <div id="splash">
         <div class="s-logo">SKYLINE</div>
@@ -356,9 +413,13 @@
 
         window.onload = () => Engine.boot();
 
-        setTimeout(() => {
+        window.addEventListener('load', () => {
+    const loader = document.getElementById('loader-screen');
+    
+    // Даем небольшую задержку в 1 секунду, чтобы юзер успел увидеть логотип
+    setTimeout(() => {
         loader.classList.add('hidden');
-    }, 3000);
+    }, 1000);
 });
         
     </script>
