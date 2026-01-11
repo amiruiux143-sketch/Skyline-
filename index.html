@@ -57,7 +57,7 @@
     opacity: 0;
     visibility: hidden;
 }
-        
+
         :root {
             --sky-accent: #007aff;
             --sky-bg: #000;
@@ -136,26 +136,28 @@
         .nav-item.active { color: var(--sky-accent); }
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        
+        
     </style>
 </head>
 <body>
-    <div id="loading-screen" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; align-items:center; justify-content:center; color:#007aff; font-family:sans-serif; flex-direction:column;">
+
+<div id="loading-screen" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; align-items:center; justify-content:center; color:#007aff; font-family:sans-serif; flex-direction:column;">
     <div style="width:40px; height:40px; border:3px solid #111; border-top:3px solid #007aff; border-radius:50%; animation:spin 1s linear infinite;"></div>
-    <p style="margin-top:20px; font-weight:bold; letter-spacing:2px;">SKYLINE LOADING...</p>
+    <p style="margin-top:20px; font-weight:bold; letter-spacing:2px;"></p>
 </div>
 
 <style>
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
-    
-    <div id="loader-screen">
-    <div class="skyline-logo">SKYLINE</div>
-    <div class="loader-bar">
-        <div class="loader-fill"></div>
-    </div>
-    <p>Инициализация системы...</p>
+
+    <div id="loading-overlay">
+        <div class="loader-circle"></div>
+        <p>ЗАГРУЗКА SKYLINE...</p>
     </div>
     
+
+
 
     <div id="splash">
         <div class="s-logo">SKYLINE</div>
@@ -268,8 +270,7 @@
         <div class="nav-item" id="nav-settings" onclick="Engine.navigate('settings', this)"><i class="fa fa-cog"></i><span>Settings</span></div>
     </nav>
 
-    
-        <script>
+    <script>
     // Ждем 3 секунды (3000 миллисекунд)
     setTimeout(function() {
         var screen = document.getElementById('loading-screen');
@@ -277,8 +278,7 @@
             screen.style.display = 'none'; // Убираем загрузку
         }
     }, 3000); 
-</script>
-    
+
         const Engine = {
             db: [],
             stats: { dl: 0 },
@@ -348,7 +348,7 @@
                         const nMatch = rawDesc.match(/Название:\s*([^🔗✅🖼️🏞️\n\r<]+)/i);
                         if(nMatch) name = this.clean(nMatch[1]);
 
-                        const icon = links.find(l => /\.(jpg|jpeg|png|webp|gif)/i.test(l)) || null;
+                                        const icon = links.find(l => /\.(jpg|jpeg|png|webp|gif)/i.test(l)) || null;
                         const apk = links.find(l => !/\.(jpg|jpeg|png|webp|gif)/i.test(l)) || "#";
 
                         let cat = "APPS";
@@ -431,16 +431,19 @@
         };
 
         window.onload = () => Engine.boot();
-
+        
         window.addEventListener('load', () => {
     const loader = document.getElementById('loader-screen');
     
     // Даем небольшую задержку в 1 секунду, чтобы юзер успел увидеть логотип
     setTimeout(() => {
         loader.classList.add('hidden');
-    }, 1000);
+    }, 3000);
 });
-        
-    </script>
+
+
+</script>
+
 </body>
+
 </html>
