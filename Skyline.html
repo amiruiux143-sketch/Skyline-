@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SKYLINE ULTIMATE PRO</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sky-accent: #007aff;
+            --sky-bg: #000;
+            --sky-card: #0d0d0d;
+            --sky-border: rgba(255, 255, 255, 0.1);
+            --sky-text: #fff;
+            --sky-text-dim: #888;
+            --anim-speed: 0.3s;
+            --radius: 24px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { background: var(--sky-bg); color: var(--sky-text); font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; overflow: hidden; transition: background 0.3s; }
+
+        /* --- SPLASH --- */
+        #splash { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .s-logo { font-family: 'Space Grotesk', sans-serif; font-size: 45px; letter-spacing: -2px; margin-bottom: 20px; }
+        .s-loader { width: 150px; height: 2px; background: #111; position: relative; }
+        .s-bar { position: absolute; height: 100%; width: 0; background: var(--sky-accent); transition: 0.3s; box-shadow: 0 0 15px var(--sky-accent); }
+
+        /* --- AUTH SCREEN --- */
+        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 9000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
+        .auth-card { background: var(--sky-card); border: 1px solid var(--sky-border); border-radius: 30px; padding: 40px 25px; width: 100%; max-width: 400px; text-align: center; }
+        .auth-input { width: 100%; background: #1a1a1a; border: 1px solid var(--sky-border); padding: 15px; border-radius: 15px; color: #fff; margin-top: 20px; outline: none; }
+        .auth-btn { width: 100%; background: var(--sky-accent); color: #fff; border: none; padding: 15px; border-radius: 15px; margin-top: 20px; font-weight: 800; cursor: pointer; }
+
+        /* --- HEADER --- */
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; padding: calc(env(safe-area-inset-top) + 20px) 25px 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(25px); border-bottom: 1px solid var(--sky-border); }
+        .h-row { display: flex; justify-content: space-between; align-items: center; }
+        .h-title h1 { font-family: 'Space Grotesk', sans-serif; font-size: 32px; }
+        .h-title span { font-size: 10px; color: var(--sky-accent); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* --- SEARCH & TAGS --- */
+        .search-area { padding: 15px 20px 0; margin-top: 130px; }
+        .search-field { background: #161616; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--sky-border); }
+        .search-field input { background: none; border: none; color: #fff; width: 100%; outline: none; font-size: 16px; }
+
+        .filter-tags { display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px; scrollbar-width: none; }
+        .tag { padding: 8px 18px; border-radius: 20px; background: var(--sky-card); border: 1px solid var(--sky-border); font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; color: #555; transition: 0.3s; }
+        .tag.active { background: var(--sky-accent); border-color: var(--sky-accent); color: #fff; }
+
+        /* --- VIEWPORT --- */
+        .viewport { height: 100vh; overflow-y: auto; padding-bottom: 150px; scrollbar-width: none; display: none; }
+        .viewport.active { display: block; }
+        .content-grid { padding: 0 20px; }
+
+        /* --- APP CARD --- */
+        .card { background: var(--sky-card); border: 1px solid var(--sky-border); border-radius: var(--radius); padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; animation: slideUp var(--anim-speed) ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .c-icon { width: 60px; height: 60px; border-radius: 16px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; color: var(--sky-accent); flex-shrink: 0; overflow: hidden; }
+        .c-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .c-info { flex: 1; min-width: 0; cursor: pointer; }
+        .c-name { font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .c-cat { font-size: 11px; color: var(--sky-accent); font-weight: 800; text-transform: uppercase; margin-top: 4px; }
+        .c-btn { background: #fff; color: #000; border: none; padding: 8px 18px; border-radius: 20px; font-weight: 800; font-size: 12px; cursor: pointer; }
+
+        /* --- SETTINGS STYLE --- */
+        .settings-box { background: var(--sky-card); border: 1px solid var(--sky-border); border-radius: 20px; padding: 20px; margin: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .settings-box b { font-size: 15px; }
+        .settings-group-title { margin: 25px 25px 5px; font-size: 12px; color: var(--sky-accent); font-weight: 800; text-transform: uppercase; }
+
+        /* --- PORTAL --- */
+        #portal { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; transform: translateY(100%); transition: 0.5s cubic-bezier(0.1, 0.9, 0.2, 1); overflow-y: auto; }
+        #portal.open { display: block; transform: translateY(0); }
+        .p-banner { width: 100%; height: 240px; object-fit: cover; background: #111; }
+        .p-header { padding: 0 25px; margin-top: -40px; display: flex; gap: 20px; }
+        .p-icon { width: 90px; height: 90px; border-radius: 22px; border: 4px solid #000; background: #111; display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--sky-accent); font-weight: 800; overflow: hidden; }
+        .p-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .p-actions { position: fixed; bottom: 0; width: 100%; padding: 20px 25px 40px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-top: 1px solid var(--sky-border); display: flex; gap: 12px; }
+        .p-btn-main { flex: 1; background: var(--sky-accent); color: #fff; border: none; border-radius: 18px; font-weight: 800; font-size: 16px; cursor: pointer; }
+
+        /* --- NAV --- */
+        nav { position: fixed; bottom: 0; width: 100%; height: 90px; background: rgba(0,0,0,0.7); backdrop-filter: blur(20px); border-top: 1px solid var(--sky-border); display: flex; justify-content: space-around; padding-bottom: 20px; z-index: 2000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 33.3%; color: #444; text-decoration: none; cursor: pointer; }
+        .nav-item.active { color: var(--sky-accent); }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item span { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <div id="splash">
+        <div class="s-logo">SKYLINE</div>
+        <div class="s-loader"><div class="s-bar" id="s-bar"></div></div>
+    </div>
+
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h1 style="font-family: 'Space Grotesk'; font-size: 30px;">Welcome</h1>
+            <p style="color: var(--sky-text-dim); font-size: 14px; margin-top: 10px;">Создайте аккаунт Skyline</p>
+            <input type="text" id="user-name" class="auth-input" placeholder="Введите имя...">
+            <button class="auth-btn" onclick="Engine.register()">ВОЙТИ</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="h-row">
+            <div class="h-title">
+                <span>Skyline Cloud</span>
+                <h1 id="h-main">Store</h1>
+            </div>
+            <i class="fa fa-circle-nodes" style="font-size: 24px; color: var(--sky-accent);"></i>
+        </div>
+    </header>
+
+    <main class="viewport active" id="view-store">
+        <div class="search-area">
+            <div class="search-field">
+                <i class="fa fa-search" style="color:#444"></i>
+                <input type="text" id="main-search" placeholder="Поиск (тг, Коран, игры)...">
+            </div>
+        </div>
+        
+        <div class="filter-tags" id="cat-tags">
+            <div class="tag active" onclick="Engine.setCat('ALL', this)">Все</div>
+            <div class="tag" onclick="Engine.setCat('APPS', this)">Софт</div>
+            <div class="tag" onclick="Engine.setCat('GAMES', this)">Игры</div>
+        </div>
+
+        <div class="content-grid" id="app-grid"></div>
+    </main>
+
+    <main class="viewport" id="view-account">
+        <div style="padding: 150px 25px 20px; text-align: center;">
+            <div id="user-avatar" style="width:80px; height:80px; background:var(--sky-accent); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800;">U</div>
+            <h2 id="display-name">Skyline User</h2>
+            <p id="acc-dl" style="color:var(--sky-accent); font-weight:800; margin-top:10px;">0 Загрузок</p>
+        </div>
+        
+        <div class="settings-group-title">Персонализация</div>
+        <div class="settings-box">
+            <b>Акцентный цвет</b>
+            <input type="color" value="#007aff" onchange="Engine.updateColor(this.value)">
+        </div>
+        <div class="settings-box">
+            <b>Размер текста</b>
+            <input type="range" min="14" max="22" value="17" oninput="document.documentElement.style.setProperty('--font-size', this.value + 'px')">
+        </div>
+    </main>
+
+    <main class="viewport" id="view-settings">
+        <div style="padding-top: 150px;">
+            <div class="settings-group-title">Система</div>
+            <div class="settings-box">
+                <b>OLED Режим</b>
+                <input type="checkbox" onchange="Engine.toggleOLED(this.checked)">
+            </div>
+            <div class="settings-box">
+                <b>Анимации</b>
+                <input type="checkbox" checked onchange="Engine.toggleAnim(this.checked)">
+            </div>
+            <div class="settings-box">
+                <b>Скругление</b>
+                <input type="range" min="0" max="40" value="24" oninput="document.documentElement.style.setProperty('--radius', this.value + 'px')">
+            </div>
+            
+            <div class="settings-group-title">Данные</div>
+            <div class="settings-box" onclick="location.reload()">
+                <b>Обновить базу</b>
+                <i class="fa fa-sync"></i>
+            </div>
+            <div class="settings-box" onclick="Engine.logout()" style="color: #ff3b30;">
+                <b>Выйти из аккаунта</b>
+                <i class="fa fa-sign-out"></i>
+            </div>
+        </div>
+    </main>
+
+    <div id="portal">
+        <img id="p-banner" src="" class="p-banner">
+        <div class="p-header">
+            <div class="p-icon" id="p-icon-box"></div>
+            <div style="padding-top:45px;">
+                <h2 id="p-name"></h2>
+                <p style="color:var(--sky-accent); font-size:12px; font-weight:800;">VERIFIED BY SKYLINE</p>
+            </div>
+        </div>
+        <div style="padding: 25px; color: var(--sky-text-dim); line-height: 1.6; font-size: 14px;">
+            Безопасная установка через шлюз Skyline. Приложение проверено на отсутствие вредоносного кода.
+        </div>
+        <div class="p-actions">
+            <div style="width:56px; height:56px; border-radius:18px; background:#1a1a1a; display:flex; align-items:center; justify-content:center; border: 1px solid var(--sky-border);" onclick="Engine.closePortal()"><i class="fa fa-x"></i></div>
+            <button class="p-btn-main" id="install-btn">УСТАНОВИТЬ</button>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-item active" id="nav-store" onclick="Engine.navigate('store', this)"><i class="fa fa-shop"></i><span>Store</span></div>
+        <div class="nav-item" id="nav-account" onclick="Engine.navigate('account', this)"><i class="fa fa-user"></i><span>Profile</span></div>
+        <div class="nav-item" id="nav-settings" onclick="Engine.navigate('settings', this)"><i class="fa fa-cog"></i><span>Settings</span></div>
+    </nav>
+
+    <script>
+        const Engine = {
+            db: [],
+            stats: { dl: 0 },
+            currentCat: 'ALL',
+            // Карта умного поиска
+            keywords: {
+                "тг": "telegram телеграм телега",
+                "коран": "quran ислам islam религия куран",
+                "ислам": "коран quran islam",
+                "игры": "games play fun arcade",
+                "софт": "apps программы утилиты"
+            },
+
+            async boot() {
+                const bar = document.getElementById('s-bar');
+                let p = 0;
+                const i = setInterval(() => {
+                    p += 20; bar.style.width = p + '%';
+                    if(p >= 100) { clearInterval(i); this.checkAuth(); }
+                }, 80);
+            },
+
+            checkAuth() {
+                const user = localStorage.getItem('skyline_user');
+                if(!user) {
+                    document.getElementById('auth-screen').style.display = 'flex';
+                } else {
+                    document.getElementById('display-name').innerText = user;
+                    document.getElementById('user-avatar').innerText = user[0].toUpperCase();
+                    this.start();
+                }
+                document.getElementById('splash').style.display = 'none';
+            },
+
+            register() {
+                const name = document.getElementById('user-name').value;
+                if(name.length < 2) return alert("Имя слишком короткое");
+                localStorage.setItem('skyline_user', name);
+                location.reload();
+            },
+
+            logout() {
+                localStorage.removeItem('skyline_user');
+                location.reload();
+            },
+
+            clean(html) {
+                let div = document.createElement("div");
+                div.innerHTML = html;
+                return (div.textContent || div.innerText || "").replace(/Название:|🔗|✅|🏞️|🖼️/gi, '').trim();
+            },
+
+            async start() {
+                try {
+                    const proxy = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent('https://tg.i-c-a.su/rss/skylineApp')}`;
+                    const res = await fetch(proxy);
+                    const text = await res.text();
+                    const xml = new DOMParser().parseFromString(text, "text/xml");
+                    const items = Array.from(xml.querySelectorAll("item"));
+
+                    this.db = items.map(item => {
+                        const rawDesc = item.querySelector("description").textContent;
+                        const title = item.querySelector("title").textContent;
+                        const links = rawDesc.match(/https?:\/\/[^\s<"']+/g) || [];
+
+                        let name = this.clean(title);
+                        const nMatch = rawDesc.match(/Название:\s*([^🔗✅🖼️🏞️\n\r<]+)/i);
+                        if(nMatch) name = this.clean(nMatch[1]);
+
+                        const icon = links.find(l => /\.(jpg|jpeg|png|webp|gif)/i.test(l)) || null;
+                        const apk = links.find(l => !/\.(jpg|jpeg|png|webp|gif)/i.test(l)) || "#";
+
+                        let cat = "APPS";
+                        if(rawDesc.toLowerCase().includes("игра") || rawDesc.toLowerCase().includes("game")) cat = "GAMES";
+
+                        return { id: Math.random().toString(36).substr(2,9), n: name, i: icon, l: apk, c: cat, d: rawDesc.toLowerCase() };
+                    });
+
+                    this.render();
+                    document.getElementById('main-search').oninput = (e) => this.render(e.target.value);
+                } catch(e) { console.error("Ошибка сети"); }
+            },
+            
+            
+            render(query = '') {
+                const grid = document.getElementById('app-grid');
+                let q = query.toLowerCase().trim();
+
+                // Применяем умные ключи
+                for(let key in this.keywords) {
+                    if(q === key) q = this.keywords[key];
+                }
+                
+                const filtered = this.db.filter(a => {
+                    const mCat = this.currentCat === 'ALL' || a.c === this.currentCat;
+                    const mSearch = a.n.toLowerCase().includes(q) || a.d.includes(q) || a.c.toLowerCase().includes(q);
+                    return mCat && mSearch;
+                });
+
+                grid.innerHTML = filtered.map(app => `
+                    <div class="card">
+                        <div class="c-icon" onclick="Engine.openPortal('${app.id}')">
+                            ${app.i ? `<img src="${app.i}" onerror="this.parentElement.innerHTML='${app.n[0]}'">` : app.n[0]}
+                        </div>
+                        <div class="c-info" onclick="Engine.openPortal('${app.id}')">
+                            <div class="c-name">${app.n}</div>
+                            <div class="c-cat">${app.c}</div>
+                        </div>
+                        <button class="c-btn" onclick="Engine.download('${app.l}')">GET</button>
+                    </div>
+                `).join('');
+            },
+
+            updateColor(val) { document.documentElement.style.setProperty('--sky-accent', val); },
+            toggleOLED(check) { document.documentElement.style.setProperty('--sky-bg', check ? '#000' : '#111'); },
+            toggleAnim(check) { document.documentElement.style.setProperty('--anim-speed', check ? '0.3s' : '0s'); },
+
+            setCat(cat, el) {
+                this.currentCat = cat;
+                document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+                el.classList.add('active');
+                this.render();
+            },
+
+            download(url) {
+                if(!url || url === "#") return alert("Файл не найден");
+                window.open(url, '_blank');
+                this.stats.dl++;
+                document.getElementById('acc-dl').innerText = this.stats.dl + " Загрузок";
+            },
+
+            openPortal(id) {
+                const app = this.db.find(a => a.id === id);
+                document.getElementById('p-name').innerText = app.n;
+                document.getElementById('p-icon-box').innerHTML = app.i ? `<img src="${app.i}">` : app.n[0];
+                document.getElementById('p-banner').src = app.i || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400";
+                document.getElementById('install-btn').onclick = () => Engine.download(app.l);
+                document.getElementById('portal').classList.add('open');
+            },
+
+            closePortal() { document.getElementById('portal').classList.remove('open'); },
+
+            navigate(page, el) {
+                document.querySelectorAll('.viewport').forEach(v => v.classList.remove('active'));
+                document.getElementById('view-' + page).classList.add('active');
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+                document.getElementById('h-main').innerText = page.charAt(0).toUpperCase() + page.slice(1);
+            }
+        };
+
+        window.onload = () => Engine.boot();
+    </script>
+</body>
+</html>
