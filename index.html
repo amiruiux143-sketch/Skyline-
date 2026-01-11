@@ -139,6 +139,15 @@
     </style>
 </head>
 <body>
+    <div id="loading-screen" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; align-items:center; justify-content:center; color:#007aff; font-family:sans-serif; flex-direction:column;">
+    <div style="width:40px; height:40px; border:3px solid #111; border-top:3px solid #007aff; border-radius:50%; animation:spin 1s linear infinite;"></div>
+    <p style="margin-top:20px; font-weight:bold; letter-spacing:2px;">SKYLINE LOADING...</p>
+</div>
+
+<style>
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+    
     <div id="loader-screen">
     <div class="skyline-logo">SKYLINE</div>
     <div class="loader-bar">
@@ -259,7 +268,17 @@
         <div class="nav-item" id="nav-settings" onclick="Engine.navigate('settings', this)"><i class="fa fa-cog"></i><span>Settings</span></div>
     </nav>
 
-    <script>
+    
+        <script>
+    // Ждем 3 секунды (3000 миллисекунд)
+    setTimeout(function() {
+        var screen = document.getElementById('loading-screen');
+        if (screen) {
+            screen.style.display = 'none'; // Убираем загрузку
+        }
+    }, 3000); 
+</script>
+    
         const Engine = {
             db: [],
             stats: { dl: 0 },
