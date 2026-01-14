@@ -119,9 +119,16 @@
         .tag.active { background: var(--sky-accent); border-color: var(--sky-accent); color: #fff; }
 
         /* --- VIEWPORT --- */
-        .viewport { height: 100vh; overflow-y: auto; padding-bottom: 150px; scrollbar-width: none; display: none; }
-        .viewport.active { display: block; }
-        .content-grid { padding: 0 20px; }
+        .viewport { 
+    height: 100vh; 
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch; /* Плавный скролл */
+    padding-top: 230px; /* Чтобы приложения не прятались за шапкой */
+    padding-bottom: 200px; /* Чтобы Al Quran не тормозил в самом низу */
+    scrollbar-width: none; 
+    display: none; 
+        }
+        
 
         /* --- APP CARD --- */
         .card { background: var(--sky-card); border: 1px solid var(--sky-border); border-radius: var(--radius); padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; animation: slideUp var(--anim-speed) ease; }
@@ -159,15 +166,7 @@
         
     </style>
 </head>
-<body>
-    .sticky-header {
-    position: -webkit-sticky; /* Для Safari */
-    position: sticky;
-    top: 0;
-    z-index: 9999;           /* Чтобы всегда было поверх карточек */
-    background-color: #000;  /* Цвет твоего фона, чтобы контент не просвечивал */
-    padding-bottom: 10px;    /* Небольшой отступ снизу */
-}
+
 
 
 <div id="loading-screen" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; align-items:center; justify-content:center; color:#007aff; font-family:sans-serif; flex-direction:column;">
@@ -216,21 +215,10 @@
             <input type="text" id="main-search" placeholder="Поиск (тг, Коран, игры)...">
         </div>
         
-        <div class="filter-tags" id="cat-tags" style="padding: 10px 0 0 0;">
-            <div class="tag active" onclick="Engine.setCat('ALL', this)">Все</div>
-            <div class="tag" onclick="Engine.setCat('APPS', this)">Софт</div>
-            <div class="tag" onclick="Engine.setCat('GAMES', this)">Игры</div>
-        </div>
+        
     </header>
     
-        <div class="h-row">
-            <div class="h-title">
-                <span>Skyline Cloud</span>
-                <h1 id="h-main">Store</h1>
-            </div>
-            <i class="fa fa-circle-nodes" style="font-size: 24px; color: var(--sky-accent);"></i>
-        </div>
-    </header>
+
 
     <main class="viewport active" id="view-store">
      
