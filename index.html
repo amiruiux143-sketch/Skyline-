@@ -119,15 +119,19 @@
         .tag.active { background: var(--sky-accent); border-color: var(--sky-accent); color: #fff; }
 
         /* --- VIEWPORT --- */
-        .viewport { 
+.viewport { 
     height: 100vh; 
     overflow-y: auto; 
-    -webkit-overflow-scrolling: touch; /* Плавный скролл */
-    padding-top: 230px; /* Чтобы приложения не прятались за шапкой */
-    padding-bottom: 200px; /* Чтобы Al Quran не тормозил в самом низу */
+    -webkit-overflow-scrolling: touch; /* Плавность для iPhone */
+    padding-top: 250px;    /* Это вернет страницы! Опускаем контент ниже шапки */
+    padding-bottom: 250px; /* Это уберет тормоза в самом низу */
     scrollbar-width: none; 
     display: none; 
-        }
+}
+.viewport.active { 
+    display: block; 
+}
+        
         
 
         /* --- APP CARD --- */
