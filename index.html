@@ -104,10 +104,17 @@
         .auth-btn { width: 100%; background: var(--sky-accent); color: #fff; border: none; padding: 15px; border-radius: 15px; margin-top: 20px; font-weight: 800; cursor: pointer; }
 
         /* --- HEADER --- */
-        header { position: fixed; top: 0; width: 100%; z-index: 1000; padding: calc(env(safe-area-inset-top) + 20px) 25px 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(25px); border-bottom: 1px solid var(--sky-border); }
-        .h-row { display: flex; justify-content: space-between; align-items: center; }
-        .h-title h1 { font-family: 'Space Grotesk', sans-serif; font-size: 32px; }
-        .h-title span { font-size: 10px; color: var(--sky-accent); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+header { 
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    z-index: 1000; 
+    padding: calc(env(safe-area-inset-top) + 15px) 20px 10px; /* Уменьшил отступы */
+    background: rgba(0,0,0,0.8); 
+    backdrop-filter: blur(25px); 
+    border-bottom: 1px solid var(--sky-border); 
+}
+        
 
         /* --- SEARCH & TAGS --- */
         .search-area { padding: 15px 20px 0; margin-top: 130px; }
