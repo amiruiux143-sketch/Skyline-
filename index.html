@@ -117,13 +117,19 @@ header {
         
 
         /* --- SEARCH & TAGS --- */
-        .search-area { padding: 15px 20px 0; margin-top: 130px; }
-        .search-field { background: #161616; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--sky-border); }
-        .search-field input { background: none; border: none; color: #fff; width: 100%; outline: none; font-size: 16px; }
+.search-area { 
+    padding: 0; 
+    margin-top: 10px; /* Поиск теперь ближе к заголовку */
+}
 
-        .filter-tags { display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px; scrollbar-width: none; }
-        .tag { padding: 8px 18px; border-radius: 20px; background: var(--sky-card); border: 1px solid var(--sky-border); font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; color: #555; transition: 0.3s; }
-        .tag.active { background: var(--sky-accent); border-color: var(--sky-accent); color: #fff; }
+.filter-tags { 
+    display: flex; 
+    gap: 8px; 
+    overflow-x: auto; 
+    padding: 10px 0; /* Меньше места сверху и снизу */
+    scrollbar-width: none; 
+}
+        
 
         /* --- VIEWPORT --- */
 .viewport { 
